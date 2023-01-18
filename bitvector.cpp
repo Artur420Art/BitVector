@@ -1,6 +1,7 @@
 #include "bitvector.h"
 #include <iostream>
 
+
 void BitVector::set(const size_t pos, const int value)
 {
     if (m_size < pos) {
