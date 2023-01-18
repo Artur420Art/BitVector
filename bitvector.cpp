@@ -2,56 +2,59 @@
 #include <iostream>
 
 
-void BitVector::set(const size_t pos, const int value)
-{
-    if (m_size < pos) {
-        m_size = pos;
-        int* tmp = new int[++m_size];
-        tmp = std::move(m_arr);
-        // delete [] m_arr;
-        m_arr = new int[m_size];
-        m_arr = std::move(tmp);
-        m_arr[pos] = static_cast<bool>(value);
-        return;
-    }
-
-    m_arr[pos] = static_cast<bool>(value);
-}
-int BitVector::operator[](size_t pos) 
-{
-    if (pos >= m_size) {
-        throw std::invalid_argument("out of range!");
-        return -1;
-    }
-    return m_arr[pos];
-}
-int BitVector::get(const size_t pos) 
-{
-    if(pos >= m_size) {
-        throw std::invalid_argument("out of range!");
-        return -1;
-    }
-    return m_arr[pos];
-}
-
 BitVector::BitVector() 
+: m_size{1}
 {
-    m_size = 32;
-    m_arr = new int[m_size];
-}
-BitVector::BitVector(size_t size)
-{
-    m_size = size;
-    m_arr = new int[m_size];
-}
-BitVector::BitVector(size_t size, const int value) 
-{
-    m_size = size;
-    m_arr = new int[++m_size];
-    m_arr[size] = static_cast<bool>(value);
+    this->m_arr = new int[m_size];
 }
 
-BitVector::~BitVector()
+BitVector::BitVector(const int size)
+: m_size{size}
+{
+    this->m_arr = new int[m_size];
+}
+
+BitVector::~BitVector() {
+    this->clear();
+}
+
+void BitVector::set(const int position, const bool value) {
+    if (position >= m_size * sizeof(int) * 8) {
+        this->resize(position);
+    }
+    int ind = position / sizeof(int) * 8;
+    int pos = position - (ind * (sizeof(int) * 8));
+    m_arr[ind] |= (1 << pos);
+}
+
+bool BitVector::get(const int position) {
+    int ind = position / sizeof(int) * 8;
+    int pos = position - (ind * (sizeof(int) * 8));
+    return m_arr[ind] &= (1 << pos); 
+}
+
+const int BitVector::size() const {
+    return this->m_size;
+}
+
+void BitVector::resize(const int new_size) {
+
+    int tmp_size = (new_size / (sizeof(int) * 8));
+    int* tmp = new int[++tmp_size];
+    for (int i = 0; i < m_size; ++i) {
+        tmp[i] = m_arr[i];
+    }
+    this->clear();
+    m_arr = tmp;
+    tmp = nullptr;
+    this->m_size = tmp_size;
+}
+
+void BitVector::clear() {
+    delete this->m_arr;
+    this->m_arr = nullptr;
+    this->m_size = 0;
+}
 {
     delete [] m_arr;
 }
