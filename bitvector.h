@@ -3,23 +3,23 @@
 #include <iostream>
 
 class BitVector {
-public: 
+public:
     BitVector();
-    BitVector(size_t size);
-    BitVector(const BitVector& rhs);
-    BitVector& operator=(const BitVector& rhs);
-    BitVector(BitVector&& rhs);
-    BitVector& operator=(BitVector&& rhs);
-    BitVector(size_t size, int value);
+    BitVector(const int);
     ~BitVector();
-    void set(size_t, const int);
-    int get(const size_t pos);
-    void print();
-    int operator[](size_t pos);
-    friend std::ostream& operator<<(std::ostream& os, const BitVector& rhs);
+
+public:
+    void set(const int, const bool val = true);
+    bool get(const int);
+    const int size() const;
+    void clear();
+    
+private:
+    void resize(const int);
+
 private:
     int* m_arr;
-    size_t m_size;
+    int m_size;
 };
 
-#endif 
+#endif
